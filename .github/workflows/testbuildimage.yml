@@ -5,6 +5,9 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
+    outputs:
+      config: ${{ steps.read-json.outputs.config }}
+#       platform: ${{ steps.get-attribute.outputs.platform }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -13,28 +16,42 @@ jobs:
         id: read-json
         run: |
           jq --version
-          echo "export TERRAFORM_VERSION=$(jq -r '.TERRAFORM_VERSION' versions.json)" >> $GITHUB_ENV
-          echo "export ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
-        #echo "::set-output name=terraform_version::$(jq -r '.TERRAFORM_VERSION' versions.json)"
-        #echo "::set-output name=atmos_version::$(jq -r '.ATMOS_VERSION' versions.json)"
-        
-      - name: Create artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: json-values
-          path: versions.json
+          echo "config<<EOF" >> $GITHUB_OUTPUT
+          cat ./versions.json >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        #echo "export TERRAFORM_VERSION=$(jq -r '.TERRAFORM_VERSION' versions.json)" >> $GITHUB_ENV
+        #echo "export ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
+      - name: Add platform in output # for simpler use, you can add a single field in the output as well.
+        id: read-attribute
+        run: echo "platform=${{fromJson(steps.read-json.outputs.config).platform}}" >> "$GITHUB_OUTPUT"
+#       - name: Create artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: json-values
+#           path: versions.json
 
   job2:
     needs: job1
+#     runs-on: ${{needs.job1.outputs.platform}}
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: json-values
-      - name: Use JSON file values
+      - name: Log JSON file
+        run: echo "${{needs.job1.outputs.config}}"
+      - name: Log an attribute in JSON file
+        run: echo "${{fromJson(needs.job1.outputs.config).attribute}}"
+      - name: Print out versions
         run: |
-          
           echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
           echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
+    
+#     steps:
+#       - name: Download artifacts
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: json-values
+#       - name: Use JSON file values
+#         run: |
+          
+#           echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
+#           echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
