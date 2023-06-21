@@ -12,6 +12,7 @@ jobs:
       - name: Read JSON file
         id: read-json
         run: |
+          jq --version
           echo "::set-output name=terraform_version::$(jq -r '.TERRAFORM_VERSION' versions.json)"
           echo "::set-output name=atmos_version::$(jq -r '.ATMOS_VERSION' versions.json)"
 
