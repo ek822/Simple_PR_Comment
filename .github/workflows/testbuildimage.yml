@@ -26,6 +26,6 @@ jobs:
     steps:
       - name: Use JSON file values
         run: |
-          echo "Terraform version: ${{fromJson(needs.job1.outputs.matrix.TERRAFORM_VERSION) }}"
+          echo "Terraform version: ${{fromJson(needs.job1.outputs.matrix)}}"
           echo "Atmos version: ${{ needs.job1.outputs.matrix.ATMOS_VERSION }}"
       #echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
