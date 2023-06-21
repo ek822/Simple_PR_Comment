@@ -19,25 +19,13 @@ jobs:
           echo "ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
           echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
           echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
-          
-      #echo "export TERRAFORM_VERSION=$(jq -r '.TERRAFORM_VERSION' versions.json)" >> $GITHUB_ENV
-      #echo "export ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
-        
-#       - name: Create artifacts
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: json-values
-#           path: versions.json
 
   job2:
     needs: job1
     runs-on: ubuntu-latest
     steps:
-#       - name: Download artifacts
-#         uses: actions/download-artifact@v2
-#         with:
-#           name: json-values
       - name: Use JSON file values
         run: |
-          echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
-          echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
+          echo "Terraform version: ${{ needs.job1.outputs.TERRAFORM_VERSION}}"
+          echo "Atmos version: ${{ needs.job1.outputs.ATMOS_VERSION}}"
+      #echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
