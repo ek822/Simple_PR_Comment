@@ -15,6 +15,8 @@ jobs:
         id: read-json
         run: |
           jq --version
+          JSON=$(cat versions.json)
+          echo "::set-output name=matrix::${JSON//'%'/'%25'}"
           echo "TERRAFORM_VERSION=$(jq -r '.TERRAFORM_VERSION' versions.json)" >> $GITHUB_ENV
           echo "ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
           echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
@@ -23,9 +25,12 @@ jobs:
   job2:
     needs: job1
     runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
       - name: Use JSON file values
         run: |
-          echo "Terraform version: ${{fromJson(needs.job1.outputs.matrix)}}"
-          echo "Atmos version: ${{ needs.job1.outputs.matrix.ATMOS_VERSION }}"
+          build
+      #echo "Terraform version: ${{fromJson(needs.job1.outputs.matrix)}}"
+      #echo "Atmos version: ${{ needs.job1.outputs.matrix.ATMOS_VERSION }}"
       #echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
