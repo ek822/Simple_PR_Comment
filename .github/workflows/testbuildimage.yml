@@ -1,0 +1,26 @@
+name: Test Build Image
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read JSON file
+        id: read-json
+        run: |
+          echo "::set-output name=terraform_version::$(jq -r '.TERRAFORM_VERSION' versions.json)"
+          echo "::set-output name=atmos_version::$(jq -r '.ATMOS_VERSION' versions.json)"
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use JSON file values
+        run: |
+          echo "Terraform version: ${{ needs.build.outputs.terraform_version }}"
+          echo "Atmos version: ${{ needs.build.outputs.atmos_version }}"
