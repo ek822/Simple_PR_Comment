@@ -6,7 +6,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.read-json.outputs.matrix }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -26,6 +26,6 @@ jobs:
     steps:
       - name: Use JSON file values
         run: |
-          echo "Terraform version: ${{ needs.job1.outputs.TERRAFORM_VERSION}}"
-          echo "Atmos version: ${{ needs.job1.outputs.ATMOS_VERSION}}"
+          echo "Terraform version: ${{fromJson(needs.job1.outputs.matrix.TERRAFORM_VERSION) }}"
+          echo "Atmos version: ${{ needs.job1.outputs.matrix.ATMOS_VERSION }}"
       #echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
