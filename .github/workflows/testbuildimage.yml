@@ -38,5 +38,3 @@ jobs:
           
           echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
           echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
-          echo "Terraform version: $TERRAFORM_VERSION"
-          echo "Atmos version: ${{ needs.build.outputs.atmos_version }}"
