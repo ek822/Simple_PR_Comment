@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       config: ${{ steps.read-json.outputs.config }}
-      platform: ${{ steps.get-attribute.outputs.platform }}
+#       platform: ${{ steps.get-attribute.outputs.platform }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -40,6 +40,10 @@ jobs:
         run: echo "${{needs.job1.outputs.config}}"
       - name: Log an attribute in JSON file
         run: echo "${{fromJson(needs.job1.outputs.config).attribute}}"
+      - name: Print out versions
+        run: |
+          echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
+          echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
     
 #     steps:
 #       - name: Download artifacts
