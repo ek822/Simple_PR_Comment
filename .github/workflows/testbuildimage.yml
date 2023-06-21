@@ -32,7 +32,8 @@ jobs:
 
   job2:
     needs: job1
-    runs-on: ${{needs.job1.outputs.platform}}
+#     runs-on: ${{needs.job1.outputs.platform}}
+    runs-on: ubuntu-latest
     
     steps:
       - name: Log JSON file
