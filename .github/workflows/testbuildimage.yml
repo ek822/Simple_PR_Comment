@@ -13,8 +13,10 @@ jobs:
         id: read-json
         run: |
           jq --version
-          echo "::set-output name=terraform_version::$(jq -r '.TERRAFORM_VERSION' ./versions.json)"
-          echo "::set-output name=atmos_version::$(jq -r '.ATMOS_VERSION' ./versions.json)"
+          echo "export TERRAFORM_VERSION=$(jq -r '.TERRAFORM_VERSION' versions.json)" >> $GITHUB_ENV
+          echo "export ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
+        #echo "::set-output name=terraform_version::$(jq -r '.TERRAFORM_VERSION' versions.json)"
+        #echo "::set-output name=atmos_version::$(jq -r '.ATMOS_VERSION' versions.json)"
 
   job2:
     needs: job1
@@ -23,5 +25,5 @@ jobs:
     steps:
       - name: Use JSON file values
         run: |
-          echo "Terraform version: ${{ needs.build.outputs.terraform_version }}"
+          echo "Terraform version: $TERRAFORM_VERSION"
           echo "Atmos version: ${{ needs.build.outputs.atmos_version }}"
