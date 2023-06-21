@@ -1,0 +1,40 @@
+name: Test Build Image
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read JSON file
+        id: read-json
+        run: |
+          jq --version
+          echo "export TERRAFORM_VERSION=$(jq -r '.TERRAFORM_VERSION' versions.json)" >> $GITHUB_ENV
+          echo "export ATMOS_VERSION=$(jq -r '.ATMOS_VERSION' versions.json)" >> $GITHUB_ENV
+        #echo "::set-output name=terraform_version::$(jq -r '.TERRAFORM_VERSION' versions.json)"
+        #echo "::set-output name=atmos_version::$(jq -r '.ATMOS_VERSION' versions.json)"
+        
+      - name: Create artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: json-values
+          path: versions.json
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: json-values
+      - name: Use JSON file values
+        run: |
+          
+          echo "Terraform version: $(jq -r '.TERRAFORM_VERSION' versions.json)"
+          echo "Atmos version: $(jq -r '.ATMOS_VERSION' versions.json)"
